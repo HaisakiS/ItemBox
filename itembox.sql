@@ -39,32 +39,32 @@ CREATE TABLE IF NOT EXISTS sales (
 	publication_date TEXT DEFAULT CURRENT_DATE,
 	sale_date TEXT,
 	discount REAL DEFAULT 0,
-	status TEXT DEFAULT 'Publicado',
+	status TEXT DEFAULT 'Listed',
 	FOREIGN KEY (id_purchase) REFERENCES purchases (id)
 );
 
 --TRIGGERS
 
-CREATE TRIGGER IF NOT EXISTS stock_after_sale --Increase sold after a sale is insertes with status 'Vendido' 
+CREATE TRIGGER IF NOT EXISTS stock_after_sale --Increase sold after a sale is insertes with status 'Sold' 
 AFTER INSERT ON sales
 FOR EACH ROW
-WHEN NEW.status = 'Vendido'
+WHEN NEW.status = 'Sold'
 BEGIN
     UPDATE purchases SET sold = sold + 1 WHERE id = NEW.id_purchase;
 END;
 
-CREATE TRIGGER IF NOT EXISTS stock_update_sale --Increase sold after a sale is updated to status 'Vendido'
+CREATE TRIGGER IF NOT EXISTS stock_update_sale --Increase sold after a sale is updated to status 'Sold'
 AFTER UPDATE ON sales
 FOR EACH ROW
-WHEN OLD.status != 'Vendido' AND NEW.status = 'Vendido'
+WHEN OLD.status != 'Sold' AND NEW.status = 'Sold'
 BEGIN
     UPDATE purchases SET sold = sold + 1 WHERE id = NEW.id_purchase;
 END;
 
-CREATE TRIGGER IF NOT EXISTS stock_delete_sale --Decrease sold after a sale with sattus 'Vendido' is deleted
+CREATE TRIGGER IF NOT EXISTS stock_delete_sale --Decrease sold after a sale with sattus 'Sold' is deleted
 AFTER DELETE ON sales
 FOR EACH ROW
-WHEN OLD.status = 'Vendido'
+WHEN OLD.status = 'Sold'
 BEGIN
     UPDATE purchases SET sold = sold - 1 WHERE id = OLD.id_purchase;
 END;

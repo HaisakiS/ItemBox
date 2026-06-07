@@ -95,9 +95,9 @@ INSERT OR REPLACE INTO price_tracker (product, variant, lowest_price) VALUES --R
 	
 -- INSERTS IN SALES
 INSERT INTO sales (id_purchase, price_sell, publication_date, sale_date, discount, status) VALUES
-	(3, 145.00, '2026-06-03', '2026-06-05', 0.00, 'Vendido'),
-	(4, 100.00, '2026-06-03', '2026-06-05', 5.00, 'Vendido'),
-	(6, 70.00, '2026-06-05', '2026-06-07', 10.00, 'Vendido');
+	(3, 145.00, '2026-06-03', '2026-06-05', 0.00, 'Sold'),
+	(4, 100.00, '2026-06-03', '2026-06-05', 5.00, 'Sold'),
+	(6, 70.00, '2026-06-05', '2026-06-07', 10.00, 'Sold');
 
 --STOCK UPDATE ON SALES (*look for an automated method)
 UPDATE purchases 
