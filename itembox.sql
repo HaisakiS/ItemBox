@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS sales (
 	FOREIGN KEY (id_purchase) REFERENCES purchases (id)
 );
 
+
 --TRIGGERS
 
 CREATE TRIGGER IF NOT EXISTS stock_after_sale --Increase sold after a sale is insertes with status 'Sold' 
