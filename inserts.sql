@@ -98,8 +98,3 @@ INSERT INTO sales (id_purchase, price_sell, publication_date, sale_date, discoun
 	(3, 145.00, '2026-06-03', '2026-06-05', 0.00, 'Sold'),
 	(4, 100.00, '2026-06-03', '2026-06-05', 5.00, 'Sold'),
 	(6, 70.00, '2026-06-05', '2026-06-07', 10.00, 'Sold');
-
---STOCK UPDATE ON SALES (*look for an automated method)
-UPDATE purchases 
-SET sold = sold + 1 
-WHERE id = 3 OR id = 4 OR id = 6
