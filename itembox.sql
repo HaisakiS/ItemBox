@@ -10,25 +10,15 @@ CREATE TABLE IF NOT EXISTS products (
 	FOREIGN KEY (category) REFERENCES categories (name)
 );
 
-CREATE TABLE IF NOT EXISTS price_tracker (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    product TEXT,
-	variant TEXT,
-	lowest_price REAL,
-	price_date TEXT DEFAULT CURRENT_DATE,
-	FOREIGN KEY (product) REFERENCES products (name),
-	
-	UNIQUE (product, variant)
-);
-
 CREATE TABLE IF NOT EXISTS purchases (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	product TEXT,
-	variant TEXT,
-	price REAL,
-	quantity INTEGER DEFAULT 1,
+	product TEXT NOT NULL,
+	variant TEXT DEFAULT 'Unico',
+	price REAL NOT NULL,
+	quantity INTEGER NOT NULL,
 	sold INTEGER DEFAULT 0,
 	purchase_date TEXT DEFAULT CURRENT_DATE,
+	status TEXT DEFAULT 'In Transit',
 	FOREIGN KEY (product) REFERENCES products (name)
 );
 
@@ -42,7 +32,6 @@ CREATE TABLE IF NOT EXISTS sales (
 	status TEXT DEFAULT 'Listed',
 	FOREIGN KEY (id_purchase) REFERENCES purchases (id)
 );
-
 
 --TRIGGERS
 
