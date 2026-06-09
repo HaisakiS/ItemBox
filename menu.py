@@ -28,7 +28,7 @@ def handle_register_purchase():
         return
 
     variant = input("Enter variant (e.g., Color, Type) [Leave blank if none]: ").strip()
-    if variant == "" : variant = None
+    if variant == "" : variant = "Único"
 
     try:
         price = float(input("Enter unit purchase price: $"))
@@ -84,7 +84,7 @@ def handle_record_sale():
             print("Error: Discount must be greater than 0.")
             return
     except ValueError:
-        print("Error: ID and Discount must be integers.")
+        print("Error: ID or Discount is not valid.")
         return
 
     date_input = input("Enter sale date (YYYY-MM-DD) [Leave blank for today]: ").strip()
