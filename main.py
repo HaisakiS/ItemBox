@@ -4,7 +4,7 @@ from menu import *
 def main():
     while True:
         print_menu()
-        choice = input("Choose an option (1-7): ").strip()
+        choice = input("Choose an option (1-8): ").strip()
 
         if choice == "1":
             handle_register_purchase()
