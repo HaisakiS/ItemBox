@@ -1,18 +1,19 @@
 from database import connect_db
 from sales import publish_for_sale, record_sale, get_sales, get_sales_dashboard
-from purchases import register_purchase, get_purchases
+from purchases import register_purchase , update_purchase_status, get_purchases
 
 def print_menu():
     print("\n======================================")
     print("          itemBox SYSTEM v1.0         ")
     print("======================================")
     print("1. 📥 Register New Purchase")
-    print("2. 📦 Publish Item for Sale")
-    print("3. 💰 Record a Closed Sale")
-    print("4. 📋 View Inventory Stock (Purchases)")
-    print("5. 📈 View Sales History")
-    print("6. 📊 View Financial Dashboard")
-    print("7. ❌ Exit")
+    print("2. 🔄 Mark Purchase as Received")
+    print("3. 📦 Publish Item for Sale")
+    print("4. 💰 Record a Closed Sale")
+    print("5. 📋 View Inventory Stock (Purchases)")
+    print("6. 📈 View Sales History")
+    print("7. 📊 View Financial Dashboard")
+    print("8. ❌ Exit")
     print("======================================")
 
 
@@ -40,15 +41,36 @@ def handle_register_purchase():
         print("Error: Invalid input type. Price must be a decimal and Quantity an integer.")
         return
 
+    transit_input = input("Is this item currently In Transit? (y/n) [Default: y]: ").strip().lower()
+    status = "Received" if transit_input == "n" else "In Transit"
+
     date_input = input("Enter purchase date (YYYY-MM-DD) [Leave blank for today]: ").strip()
     if date_input == "" : date_input = None
 
-    register_purchase(product, price, variant, quantity, date_input)
+    register_purchase(product, price, variant, quantity, date_input, status)
     print("*" * 38)
 
 
+def handle_update_received():
+    #Choice 1 Update purchase as Received
+    print("\n" + "*" * 38)
+    print("         UPDATE PURCHASE AS RECEIVED        ")
+    print("" * 38)
+    
+    try:
+        purchase_id = int(input("Enter the ID of the Purchase: "))
+        if purchase_id < 0:
+            print("Error: ID must be greater than 0.")
+            return
+    except ValueError:
+        print("Error: IDs must be integers.")
+        return
+    
+    update_purchase_status(purchase_id)
+    print("*" * 38)
+
 def handle_publish_for_sale():
-    #Choice 1 Publish product sale
+    #Choice 3 Publish product sale
     print("\n" + "*" * 38)
     print("         PUBLISH ITEM FOR SALE        ")
     print("" * 38)
@@ -71,7 +93,7 @@ def handle_publish_for_sale():
 
 
 def handle_record_sale():
-    #Choice 3: Change status of a sale to 'Sold'.
+    #Choice 4: Change status of a sale to 'Sold'.
     print("\n" + "*" * 38)
     print("           RECORD CLOSED SALE         ")
     print("" * 38)
@@ -92,3 +114,18 @@ def handle_record_sale():
 
     record_sale(sale_id, discount, date_input)
     print("*" * 38)
+    
+    
+def handle_view_purchases():
+    #Choice 5 Show Purchases
+    get_purchases()
+
+
+def handle_view_sales():
+    #Choice 6 Show Sales
+    get_sales()
+
+
+def handle_view_dashboard():
+    #Choice 7 Show Dashboard
+    get_sales_dashboard()
