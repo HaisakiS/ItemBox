@@ -29,7 +29,7 @@ def add_product(name,category):
     finally:
         conn.close()
         
-def register_purchase(product, price, variant = "Unico", quantity=1, date = None):
+def register_purchase(product, price, variant = "Unico", quantity=1, date = None, status = "In Transit"):
     conn = connect_db()
     if conn is None: return
     
@@ -37,14 +37,14 @@ def register_purchase(product, price, variant = "Unico", quantity=1, date = None
         cursor = conn.cursor()
         
         if date:
-            cursor.execute("""INSERT INTO purchases (product, variant, price, quantity, purchase_date) 
-                VALUES (?, ?, ?, ?, ?);""", (product, variant, price, quantity, date))
+            cursor.execute("""INSERT INTO purchases (product, variant, price, quantity, purchase_date,status) 
+                VALUES (?, ?, ?, ?, ?, ?);""", (product, variant, price, quantity, date, status))
         else:
-            cursor.execute("""INSERT INTO purchases (product, variant, price, quantity) 
-                VALUES (?, ?, ?, ?);""", (product, variant, price, quantity))
+            cursor.execute("""INSERT INTO purchases (product, variant, price, quantity, status) 
+                VALUES (?, ?, ?, ?, ?);""", (product, variant, price, quantity, status))
         
         conn.commit()
-        print(f"Purchase registered: {quantity}x {product} [{variant}] | ${price} per unit.")
+        print(f"Purchase registered {status} : {quantity}x {product} [{variant}] | ${price} per unit.")
         
     except sqlite3.Error as e:
         print(f"Error registering purchase: {e}")
@@ -58,27 +58,50 @@ def get_purchases():
     
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM purchases ORDER BY id ASC;")
+        cursor.execute("SELECT id, product, variant, price, quantity, sold, purchase_date, status FROM purchases ORDER BY id ASC;")
         purchases = cursor.fetchall()
         
         print("\n=== Purchases ===")
         if not purchases:
             return
           
-        print("=" * 60 + " Purchases " + "=" * 60)
-        print(f"{'ID':<4} | {'Product Name':<40} | {'Variant':<8} | {'Unit Price':<10} | {'Qty':<5} | {'Sold':<5} | {'Stock':<6} | {'Total Cost':<11} | {'Purchase Date':<9}")
-        print("=" * 131)
+        print("\n" + "=" * 65 + " Purchases & Logistics " + "=" * 65)
+        print(f"{'ID':<4} | {'Product Name':<35} | {'Variant':<12} | {'Unit Price':<10} | {'Qty':<5} | {'Sold':<5} | {'Stock':<6} | {'Status':<11} | {'Purchase Date':<11}")
+        print("=" * 150)
           
         for row in purchases:
-            id_p, product, variant, price, quantity, sold, purchase_date = row
+            id_p, product, variant, price, quantity, sold, purchase_date, status = row
             
             stock = quantity - sold
-            total_investment = price * quantity
-            display_date = purchase_date if purchase_date else "----"
             
-            print(f"""{id_p:<4} | {product:<40} | {variant:<8} | ${price:<9.2f} | {quantity:<5} | {sold:<5} | {stock:<6} | ${total_investment:<10.2f} | {display_date:<9}""")
+            if stock == 0:
+                status = "Out of Stock"
+            
+            print(f"{id_p:<4} | {product:<35} | {variant:<12} | ${price:<9.2f} | {quantity:<5} | {sold:<5} | {stock:<6} | {status:<12} | {purchase_date:<11}")
             
     except sqlite3.Error as e:
         print(f"Error fetching purchases: {e}")
+    finally:
+        conn.close()
+        
+        
+def update_purchase_status(purchase_id):
+    conn = connect_db()
+    if conn is None: return
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""UPDATE purchases 
+                       SET status = 'Received'
+                       WHERE id = ? AND status = 'In Transit';""", (purchase_id,))
+        
+        if cursor.rowcount == 0:
+            print(f"No changes made. Check if Purchase ID {purchase_id} exists and is currently 'In Transit'.")
+            return
+        
+        conn.commit()
+        print(f"Purchase with id {purchase_id} updated succesfully.")
+    except sqlite3.Error as e:
+        print(f"Error updating purchase: {e}")
     finally:
         conn.close()
