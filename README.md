@@ -1,37 +1,54 @@
-# 📦 itemBox
+# 📦 itemBox v1.0
 
-**itemBox** is a smart inventory management, purchasing, and sales tracking system tailored for tech, peripherals, and collectibles resellers. 
+**itemBox** is a robust, modular CLI inventory management, purchasing, and logistics tracking system tailored for tech, peripherals, and import-resellers. 
 
-This system goes beyond basic record-keeping by relationally connecting every sale to its specific purchase batch. This architecture allows you to calculate exact net profits, track real-time stock levels, and monitor historical lowest market prices.
+Unlike basic inventory apps that just count units, **itemBox** relationally connects every single sale to its specific purchase batch. This batch-based architecture allows the system to audit precise financial performance, manage complex shipping logistics, and calculate real-time metrics without data redundancy.
 
 ---
 
-## Key Features
+## 🚀 Key Features
 
 * **Batch-Based Stock Control:** Track identical products purchased at different prices or on different dates independently.
-* **Exact Financial Metrics:** Calculate real income and net profits by factoring in platform fees, shipping costs, or discounts in real time.
-* **Price Tracker:** Prevents duplicate product-variant combinations and logs the lowest cost ever found in the market.
+* **Smart Logistics States:** Native tracking for imports through a two-phase pipeline: `In Transit` (locked from immediate sale) and `Received` (physically in stock).
+* **Automated Data Integrity (SQLite Triggers):** Heavy use of database triggers to automatically calculate `sold` units and dynamic `Stock` changes during insertions, updates, or deletions.
+* **Live Financial Dashboard:** Computes real-time financials including Total Revenue, Cost of Goods Sold (COGS), Accumulated Net Profit/Loss, and precise Return on Investment (ROI).
+* **Input Blindfolding:** Robust error-handling in the CLI wrapper to prevent system crashes against invalid data types or format errors.
 
 ---
 
-## Database Design (Relational Schema)
+## 🛠️ Tech Stack
 
-The database architecture is optimized for SQLite and consists of 5 interconnected tables:
-
-1.  **`categories`**: Master table defining allowed item types (e.g., *Mando, Mouse, Peluche*).
-2.  **`products`**: Master table for product models, linked directly to a category.
-3.  **`price_tracker`**: A deal history tracker enforcing uniqueness on the combination of `product` and `variant`.
-4.  **`purchases`**: The core of the inventory. It tracks costs, quantities acquired, and units sold (`sold`) to calculate current stock.
-5.  **`sales`**: The outflow registry connecting directly to a `id_purchase` to audit the financial performance of each individual unit.
-
-
-## Tech Stack
-
-* **Database Engine:** SQLite 3
-* **Language:** SQL (Relational Structure)
+* **Language:** Python 3.x (Core logic and interactive CLI menu)
+* **Database Engine:** SQLite 3 (Relational structure with active constraints)
+* **Architecture:** Modular Backend-Frontend split (`main` ➔ `menu` ➔ `sales`/`purchases` ➔ `database`)
 
 ---
 
-## ⚙️ Initial Setup
+## 📐 Database Design & Relational Schema
 
-To set up the **itemBox** database, clone this repository and run the database creation scripts. Additionally you can test the databse using the inserts, drops and query files in the repository.
+The database architecture is optimized for SQLite with `FOREIGN KEY` constraints enforced at runtime:
+
+1. **`categories`**: Master table defining allowed item families (e.g., *Peripherals*).
+2. **`products`**: Catalog table mapping specific models to their parent categories.
+3. **`purchases`**: The inventory core. Tracks individual batch costs, variants, quantities acquired, purchase dates, and current logistics status (`In Transit` vs `Received`).
+4. **`sales`**: The outflow registry. Maps each sale listing directly to an item's `id_purchase` batch to dynamically audit financial performance.
+
+### ⚡ Automated Database Triggers
+* `stock_after_sale`: Increments the batch `sold` count immediately when a sale transitions to `'Sold'`.
+* `stock_update_sale`: Manages conditional step-ups if a listing shifts status (e.g., from `'Listed'` to `'Sold'`).
+* `stock_delete_sale`: Automatically restores stock counts if a closed sale is removed or rolled back.
+
+---
+
+## 📂 Project Structure
+
+```text
+itemBox/
+├── database.py       # DB connection pool, PRAGMA setup & system initializer
+├── itembox.sql       # Relational schema (Tables & Triggers)
+├── main.py           # Core execution loop and app entry point
+├── menu.py           # CLI interactive handlers and safe input wrappers
+├── populate_db.py    # Hard-reset and automated seed script with real metrics
+├── purchases.py      # Inventory core backend (Ingress, logistics updates)
+├── reset_db.py       # File-level database wiping utility
+└── sales.py          # Sales pipeline backend (Listings, closings, financial dashboard)
