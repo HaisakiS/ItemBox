@@ -8,6 +8,18 @@ def publish_for_sale(id_purchase,sell_price,publication_date = None):
     
     try:
         cursor = conn.cursor()
+        
+        cursor.execute("SELECT status FROM purchases WHERE id = ?;", (id_purchase,))
+        result = cursor.fetchone()
+        
+        if not result:
+            print(f"Error: Purchase ID {id_purchase} does not exist.")
+            return
+            
+        if result[0] == 'In Transit':
+            print(f"Logistics Block: Item with Purchase ID {id_purchase} is still 'In Transit'. You cannot publish it until it arrives!")
+            return
+        
         if publication_date:
             cursor.execute("""
                 INSERT INTO sales (id_purchase, price_sell, publication_date)
