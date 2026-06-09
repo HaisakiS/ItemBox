@@ -1,8 +1,10 @@
-# 📦 itemBox v1.0
+# 📦 ItemBox v1.0
 
-**itemBox** is a robust, modular CLI inventory management, purchasing, and logistics tracking system tailored for tech, peripherals, and import-resellers. 
+A modular inventory and import logistics management system built with **Python** and **SQLite3**, designed to track stock by purchase batches, manage inbound shipments, and analyze business performance in real time through a lightweight command-line interface.
 
-Unlike basic inventory apps that just count units, **itemBox** relationally connects every single sale to its specific purchase batch. This batch-based architecture allows the system to audit precise financial performance, manage complex shipping logistics, and calculate real-time metrics without data redundancy.
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![SQLite](https://img.shields.io/badge/SQLite-3-green)
+![CLI](https://img.shields.io/badge/Interface-CLI-orange)
 
 ---
 
@@ -11,7 +13,6 @@ Unlike basic inventory apps that just count units, **itemBox** relationally conn
 * **Batch-Based Stock Control:** Track identical products purchased at different prices or on different dates independently.
 * **Smart Logistics States:** Native tracking for imports through a two-phase pipeline: `In Transit` (locked from immediate sale) and `Received` (physically in stock).
 * **Automated Data Integrity (SQLite Triggers):** Heavy use of database triggers to automatically calculate `sold` units and dynamic `Stock` changes during insertions, updates, or deletions.
-* **Live Financial Dashboard:** Computes real-time financials including Total Revenue, Cost of Goods Sold (COGS), Accumulated Net Profit/Loss, and precise Return on Investment (ROI).
 * **Input Blindfolding:** Robust error-handling in the CLI wrapper to prevent system crashes against invalid data types or format errors.
 
 ---
@@ -52,3 +53,56 @@ itemBox/
 ├── purchases.py      # Inventory core backend (Ingress, logistics updates)
 ├── reset_db.py       # File-level database wiping utility
 └── sales.py          # Sales pipeline backend (Listings, closings, financial dashboard)
+```
+
+---
+
+## ⚙️ Installation & Usage
+
+### 1. Requirements
+
+- Python 3.x
+- SQLite3 (included with Python's standard library)
+
+No external dependencies are required.
+
+### 2. Initialize the Database
+
+Create the schema, triggers, and sample data:
+
+```bash
+python populate_db.py
+```
+
+### 3. Launch the Application
+
+```bash
+python main.py
+```
+
+---
+
+## 📊 CLI Preview
+
+```text
+======================================
+          itemBox SYSTEM v1.0
+======================================
+
+1. 📥 Register New Purchase
+2. 🔄 Mark Purchase as Received
+3. 📦 Publish Item for Sale
+4. 💰 Record a Closed Sale
+5. 📋 View Inventory Stock
+6. 📈 View Sales History
+7. 📊 View Financial Dashboard
+8. ❌ Exit
+
+======================================
+Choose an option (1-8):
+```
+---
+
+## 📄 License
+
+This project was developed for educational purposes and to explore inventory management, relational database design, and automation using SQLite triggers.
